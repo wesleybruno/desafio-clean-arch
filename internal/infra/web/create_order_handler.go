@@ -9,25 +9,25 @@ import (
 	"github.com/wesleybruno/desafio-clean-arch/pkg/events"
 )
 
-type WebOrderHandler struct {
+type WebCreateOrderHandler struct {
 	EventDispatcher   events.EventDispatcherInterface
 	OrderRepository   entity.OrderRepositoryInterface
 	OrderCreatedEvent events.EventInterface
 }
 
-func NewWebOrderHandler(
+func NewWebCreateOrderHandler(
 	EventDispatcher events.EventDispatcherInterface,
 	OrderRepository entity.OrderRepositoryInterface,
 	OrderCreatedEvent events.EventInterface,
-) *WebOrderHandler {
-	return &WebOrderHandler{
+) *WebCreateOrderHandler {
+	return &WebCreateOrderHandler{
 		EventDispatcher:   EventDispatcher,
 		OrderRepository:   OrderRepository,
 		OrderCreatedEvent: OrderCreatedEvent,
 	}
 }
 
-func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *WebCreateOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var dto usecase.OrderInputDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
