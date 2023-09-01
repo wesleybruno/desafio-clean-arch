@@ -2,22 +2,17 @@ package usecase
 
 import (
 	"github.com/wesleybruno/desafio-clean-arch/internal/entity"
-	"github.com/wesleybruno/desafio-clean-arch/pkg/events"
 )
 
 type ListOrderUseCase struct {
 	OrderRepository entity.OrderRepositoryInterface
-	OrderCreated    events.EventInterface
-	EventDispatcher events.EventDispatcherInterface
 }
 
 func NewListOrderUseCase(
 	OrderRepository entity.OrderRepositoryInterface,
-	EventDispatcher events.EventDispatcherInterface,
 ) *ListOrderUseCase {
 	return &ListOrderUseCase{
 		OrderRepository: OrderRepository,
-		EventDispatcher: EventDispatcher,
 	}
 }
 

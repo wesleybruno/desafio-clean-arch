@@ -9,19 +9,19 @@ import (
 	"github.com/wesleybruno/desafio-clean-arch/pkg/events"
 )
 
-type OrderCreatedHandler struct {
+type ActionEventHandler struct {
 	RabbitMQChannel *amqp.Channel
 }
 
-func NewOrderCreatedHandler(rabbitMQChannel *amqp.Channel) *OrderCreatedHandler {
-	return &OrderCreatedHandler{
+func NewActionEventHandler(rabbitMQChannel *amqp.Channel) *ActionEventHandler {
+	return &ActionEventHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	}
 }
 
-func (h *OrderCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
+func (h *ActionEventHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Printf("Order created: %v", event.GetPayload())
+	fmt.Printf("%v: %v", event.GetName(), event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 
 	msgRabbitmq := amqp.Publishing{

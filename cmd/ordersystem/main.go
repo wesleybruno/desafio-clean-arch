@@ -18,7 +18,6 @@ import (
 	"github.com/wesleybruno/desafio-clean-arch/internal/infra/grpc/service"
 	"github.com/wesleybruno/desafio-clean-arch/internal/infra/web"
 	server "github.com/wesleybruno/desafio-clean-arch/internal/infra/web/webserver"
-	"github.com/wesleybruno/desafio-clean-arch/internal/usecase"
 	"github.com/wesleybruno/desafio-clean-arch/pkg/events"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -42,7 +41,7 @@ func main() {
 	rabbitMQChannel := getRabbitMQChannel()
 
 	eventDispatcher := events.NewEventDispatcher()
-	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
+	eventDispatcher.Register("OrderCreated", &handler.ActionEventHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
@@ -50,14 +49,12 @@ func main() {
 	// listOrderUsecase := NewListOrderUseCase(db, eventDispatcher)
 
 	webserver := server.NewWebServer(configs.WebServerPort)
-	// webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
-	// webListHandler := NewWebListOrderHandler(db, eventDispatcher)
 
 	orderRepository := database.NewOrderRepository(db)
-	orderCreated := event.NewOrderCreated()
+	orderCreatedEvent := event.NewOrderCreatedActionEvent()
 
-	createOrderHandler := web.NewWebCreateOrderHandler(eventDispatcher, orderRepository, orderCreated)
-	listOrderHandler := web.NewWebListOrderHandler(eventDispatcher, orderRepository)
+	createOrderHandler := web.NewWebCreateOrderHandler(eventDispatcher, orderRepository, orderCreatedEvent)
+	listOrderHandler := web.NewWebListOrderHandler(orderRepository)
 
 	webHandler := server.NewHandlerMethod(
 		"/order",
@@ -108,17 +105,4 @@ func getRabbitMQChannel() *amqp.Channel {
 		panic(err)
 	}
 	return ch
-}
-
-func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateOrderUseCase {
-	orderRepository := database.NewOrderRepository(db)
-	orderCreated := event.NewOrderCreated()
-	createOrderUseCase := usecase.NewCreateOrderUseCase(orderRepository, orderCreated, eventDispatcher)
-	return createOrderUseCase
-}
-
-func NewListOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.ListOrderUseCase {
-	orderRepository := database.NewOrderRepository(db)
-	listOrderUseCase := usecase.NewListOrderUseCase(orderRepository, eventDispatcher)
-	return listOrderUseCase
 }

@@ -7,9 +7,15 @@ type ActionEvent struct {
 	Payload interface{}
 }
 
-func NewOrderCreated() *ActionEvent {
+func NewOrderCreatedActionEvent() *ActionEvent {
 	return &ActionEvent{
 		Name: "OrderCreated",
+	}
+}
+
+func NewActionEvent(event string) *ActionEvent {
+	return &ActionEvent{
+		Name: event,
 	}
 }
 
