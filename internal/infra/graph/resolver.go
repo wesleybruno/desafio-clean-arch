@@ -8,4 +8,5 @@ import "github.com/wesleybruno/desafio-clean-arch/internal/usecase"
 
 type Resolver struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
+	ListOrderUsecase   usecase.ListOrderUseCase
 }

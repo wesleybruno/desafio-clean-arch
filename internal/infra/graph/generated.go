@@ -37,6 +37,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Query() QueryResolver
 }
 
 type DirectiveRoot struct {
@@ -55,11 +56,16 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Orders func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	CreateOrder(ctx context.Context, input *model.OrderInput) (*model.Order, error)
+}
+
+type QueryResolver interface {
+	Orders(ctx context.Context) ([]*model.Order, error)
 }
 
 type executableSchema struct {
@@ -116,6 +122,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.Tax(childComplexity), true
+	
+	case "Query.orders":
+		if e.complexity.Query.Orders == nil {
+			break
+		}
+
+		return e.complexity.Query.Orders(childComplexity), true
 
 	}
 	return 0, false
